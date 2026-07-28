@@ -1,0 +1,147 @@
+.counseling-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.counseling-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.counseling-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.counseling-card__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.counseling-card__user {
+  flex: 1;
+}
+
+.counseling-card__name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 5px;
+}
+
+.counseling-card__contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.counseling-card__contact {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.counseling-card__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.counseling-card__date {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: white;
+  background: #7c3aed;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.counseling-card__body {
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.counseling-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.counseling-detail {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+
+.counseling-detail__label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 5px;
+}
+
+.counseling-detail__value {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.counseling-help {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+
+.counseling-help__text {
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin-top: 5px;
+}
+
+@media (max-width: 580px) {
+  .counseling-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .counseling-card__header {
+    flex-wrap: wrap;
+  }
+
+  .counseling-card__actions {
+    flex-direction: row;
+    align-items: center;
+  }
+}
