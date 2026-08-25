@@ -176,6 +176,11 @@
   color: #854d0e;
 }
 
+.badge--purple {
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+
 /* Table */
 .data-table {
   width: 100%;
