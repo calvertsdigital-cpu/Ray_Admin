@@ -86,6 +86,7 @@ export function getEndpoints(role) {
         getAllOrders: '/api/orders/all-orders',
         updateOrderStatus: (id) => `/api/orders/update-status/${id}`,
         sendMerchantEnquiry: '/api/orders/merchant-enquiry',
+        confirmOrder: '/api/orders/confirm-order',
 
         // Categories
         getCategories: '/api/admin/get-category',

@@ -35,6 +35,11 @@ export default function OrderManagement() {
   const [showEnquiryModal, setShowEnquiryModal] = useState(false);
   const [enquiryOrderId, setEnquiryOrderId] = useState(null);
   const [merchantEmail, setMerchantEmail] = useState('');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmingOrderId, setConfirmingOrderId] = useState(null);
+  const [selectedItems, setSelectedItems] = useState({});
+  const [shippingCost, setShippingCost] = useState('');
+  const [adminNotes, setAdminNotes] = useState('');
 
   // Fetch all orders (legacy purchases API)
   const legacyFetcher = useCallback(async () => {
@@ -85,6 +90,27 @@ export default function OrderManagement() {
       setEnquiryOrderId(orderId);
       setShowEnquiryModal(true);
       setMerchantEmail('');
+      return;
+    }
+
+    if (action === 'confirm') {
+      // Open confirmation modal
+      const order = allOrders.find(o => o._id === orderId);
+      if (order) {
+        setConfirmingOrderId(orderId);
+        // Initialize selected items (all available by default)
+        const itemsInit = {};
+        order.items.forEach((item, idx) => {
+          itemsInit[idx] = {
+            selected: true,
+            quantity: item.quantity
+          };
+        });
+        setSelectedItems(itemsInit);
+        setShippingCost('');
+        setAdminNotes('');
+        setShowConfirmModal(true);
+      }
       return;
     }
     
@@ -138,6 +164,60 @@ export default function OrderManagement() {
     } catch (error) {
       console.error('Error sending merchant enquiry:', error);
       toast.error(error.response?.data?.message || 'Failed to send merchant enquiry');
+    } finally {
+      setUpdatingOrder(null);
+    }
+  };
+
+  // Handle order confirmation with item selection and shipping
+  const handleSubmitConfirmation = async () => {
+    // Validation
+    if (!shippingCost || isNaN(shippingCost) || parseFloat(shippingCost) < 0) {
+      toast.error('Please enter a valid shipping cost');
+      return;
+    }
+
+    const order = allOrders.find(o => o._id === confirmingOrderId);
+    if (!order) {
+      toast.error('Order not found');
+      return;
+    }
+
+    // Build confirmed items list
+    const confirmedItems = order.items.map((item, idx) => ({
+      productId: item.product?._id || item.productId,
+      isAvailable: selectedItems[idx]?.selected || false,
+      quantity: parseInt(selectedItems[idx]?.quantity || item.quantity),
+      name: item.name || item.product?.name
+    }));
+
+    // Check if at least one item is available
+    const hasAvailable = confirmedItems.some(item => item.isAvailable);
+    if (!hasAvailable) {
+      toast.error('Please select at least one product as available');
+      return;
+    }
+
+    setUpdatingOrder(confirmingOrderId);
+
+    try {
+      await axiosInstance.post(getEndpoints(role).confirmOrder, {
+        orderId: confirmingOrderId,
+        confirmedItems,
+        shippingCost: parseFloat(shippingCost),
+        adminNotes: adminNotes.trim()
+      });
+
+      toast.success('Order confirmed! Notification sent to customer.');
+      setShowConfirmModal(false);
+      setConfirmingOrderId(null);
+      setSelectedItems({});
+      setShippingCost('');
+      setAdminNotes('');
+      refresh();
+    } catch (error) {
+      console.error('Error confirming order:', error);
+      toast.error(error.response?.data?.message || 'Failed to confirm order');
     } finally {
       setUpdatingOrder(null);
     }
@@ -400,6 +480,237 @@ export default function OrderManagement() {
                 </tbody>
               </table>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Order Confirmation Modal */}
+      {showConfirmModal && confirmingOrderId && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1001,
+          overflowY: 'auto'
+        }}>
+          <div className="card" style={{
+            width: '90%',
+            maxWidth: '700px',
+            padding: '30px',
+            animation: 'slideUp 0.3s ease-out',
+            margin: '20px auto'
+          }}>
+            {(() => {
+              const order = allOrders.find(o => o._id === confirmingOrderId);
+              if (!order) return null;
+
+              const confirmedSubtotal = order.items.reduce((sum, item, idx) => {
+                if (selectedItems[idx]?.selected) {
+                  return sum + (item.price * (parseInt(selectedItems[idx]?.quantity) || item.quantity));
+                }
+                return sum;
+              }, 0);
+
+              const shipping = parseFloat(shippingCost) || 0;
+              const newTotal = confirmedSubtotal + shipping - (order.discount || 0);
+
+              return (
+                <>
+                  <div style={{ marginBottom: '20px', borderBottom: '2px solid #eee', paddingBottom: '15px' }}>
+                    <h2 style={{ margin: '0 0 10px 0', fontSize: '22px', fontWeight: '700', color: '#333' }}>
+                      Confirm Order #{order.orderNumber}
+                    </h2>
+                    <p style={{ margin: '0', color: 'var(--text-secondary)', fontSize: '14px' }}>
+                      Select available products and set shipping cost
+                    </p>
+                  </div>
+
+                  {/* Items Selection */}
+                  <div style={{ marginBottom: '24px' }}>
+                    <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', fontWeight: '600', color: '#333' }}>
+                      📦 Products Ordered
+                    </h3>
+                    <div style={{ background: 'var(--bg)', padding: '12px', borderRadius: '8px', maxHeight: '300px', overflowY: 'auto' }}>
+                      {order.items?.map((item, idx) => (
+                        <div key={idx} style={{
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          padding: '12px',
+                          borderBottom: idx < order.items.length - 1 ? '1px solid #eee' : 'none',
+                          gap: '12px'
+                        }}>
+                          <div style={{ flex: 1 }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                              <input
+                                type="checkbox"
+                                checked={selectedItems[idx]?.selected || false}
+                                onChange={(e) => {
+                                  setSelectedItems(prev => ({
+                                    ...prev,
+                                    [idx]: { ...prev[idx], selected: e.target.checked }
+                                  }));
+                                }}
+                                style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                              />
+                              <span style={{ fontWeight: '500', color: '#333', flex: 1 }}>
+                                {item.name || item.product?.name}
+                              </span>
+                            </label>
+                            <p style={{ margin: '6px 0 0 26px', color: 'var(--text-secondary)', fontSize: '13px' }}>
+                              Requested: {item.quantity} × ${item.price.toFixed(2)}
+                            </p>
+                          </div>
+                          
+                          {selectedItems[idx]?.selected && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <label style={{ fontSize: '12px', color: '#666', minWidth: '60px' }}>Qty</label>
+                              <input
+                                type="number"
+                                min="1"
+                                max={item.quantity}
+                                value={selectedItems[idx]?.quantity || item.quantity}
+                                onChange={(e) => {
+                                  setSelectedItems(prev => ({
+                                    ...prev,
+                                    [idx]: { ...prev[idx], quantity: parseInt(e.target.value) || item.quantity }
+                                  }));
+                                }}
+                                style={{
+                                  width: '50px',
+                                  padding: '6px',
+                                  border: '1px solid #ddd',
+                                  borderRadius: '4px',
+                                  fontSize: '13px'
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Shipping Cost */}
+                  <div style={{ marginBottom: '24px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#333' }}>
+                      🚚 Shipping Cost
+                    </label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontWeight: '600', color: '#666' }}>$</span>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={shippingCost}
+                        onChange={(e) => setShippingCost(e.target.value)}
+                        placeholder="0.00"
+                        style={{
+                          flex: 1,
+                          padding: '10px 12px',
+                          border: '1px solid #ddd',
+                          borderRadius: '6px',
+                          fontSize: '14px',
+                          fontFamily: 'inherit'
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Admin Notes */}
+                  <div style={{ marginBottom: '24px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#333' }}>
+                      📝 Admin Notes (Optional)
+                    </label>
+                    <p style={{ margin: '0 0 8px 0', color: 'var(--text-secondary)', fontSize: '12px' }}>
+                      Reason for unavailable items (sent to customer)
+                    </p>
+                    <textarea
+                      value={adminNotes}
+                      onChange={(e) => setAdminNotes(e.target.value)}
+                      placeholder="e.g., Currently out of stock. Will reorder next week."
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        border: '1px solid #ddd',
+                        borderRadius: '6px',
+                        fontSize: '14px',
+                        fontFamily: 'inherit',
+                        minHeight: '80px',
+                        boxSizing: 'border-box',
+                        resize: 'vertical'
+                      }}
+                    />
+                  </div>
+
+                  {/* Order Summary Preview */}
+                  <div style={{ background: '#f8f9fa', padding: '16px', borderRadius: '8px', marginBottom: '24px', border: '1px solid #e5e7eb' }}>
+                    <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: '600', color: '#333' }}>
+                      💰 Order Summary Preview
+                    </h4>
+                    <div style={{ fontSize: '13px', color: '#666', lineHeight: '1.8' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                        <span>Available Items Subtotal:</span>
+                        <strong style={{ color: '#333' }}>${confirmedSubtotal.toFixed(2)}</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                        <span>Shipping Cost:</span>
+                        <strong style={{ color: '#333' }}>${shipping.toFixed(2)}</strong>
+                      </div>
+                      {order.discount > 0 && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', color: '#4caf50' }}>
+                          <span>Discount:</span>
+                          <strong>-${order.discount.toFixed(2)}</strong>
+                        </div>
+                      )}
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        paddingTop: '12px',
+                        borderTop: '1px solid #ddd',
+                        marginTop: '12px',
+                        fontSize: '15px',
+                        fontWeight: '700'
+                      }}>
+                        <span>New Total:</span>
+                        <span style={{ color: '#77a13d' }}>${newTotal.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                    <button
+                      className="btn btn--ghost"
+                      onClick={() => {
+                        setShowConfirmModal(false);
+                        setConfirmingOrderId(null);
+                        setSelectedItems({});
+                        setShippingCost('');
+                        setAdminNotes('');
+                      }}
+                      disabled={updatingOrder === confirmingOrderId}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="btn btn--primary"
+                      onClick={handleSubmitConfirmation}
+                      disabled={updatingOrder === confirmingOrderId || !shippingCost}
+                      style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <CheckCircle2 size={14} />
+                      {updatingOrder === confirmingOrderId ? 'Confirming...' : 'Save & Notify Customer'}
+                    </button>
+                  </div>
+                </>
+              );
+            })()}
           </div>
         </div>
       )}
