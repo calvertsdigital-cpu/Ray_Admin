@@ -141,7 +141,7 @@ export default function OrderManagement() {
     }
   };
 
-  // Handle merchant enquiry submission
+  // Handle Manufacturer Enquiry submission
   const handleSubmitEnquiry = async () => {
     if (!merchantEmail.trim()) {
       toast.error('Please enter a merchant email');
@@ -156,14 +156,14 @@ export default function OrderManagement() {
         merchantEmail: merchantEmail.trim()
       });
 
-      toast.success(`Merchant enquiry sent to ${merchantEmail}`);
+      toast.success(`Manufacturer Enquiry sent to ${merchantEmail}`);
       setShowEnquiryModal(false);
       setMerchantEmail('');
       setEnquiryOrderId(null);
       refresh();
     } catch (error) {
-      console.error('Error sending merchant enquiry:', error);
-      toast.error(error.response?.data?.message || 'Failed to send merchant enquiry');
+      console.error('Error sending Manufacturer Enquiry:', error);
+      toast.error(error.response?.data?.message || 'Failed to send Manufacturer Enquiry');
     } finally {
       setUpdatingOrder(null);
     }
@@ -315,7 +315,7 @@ export default function OrderManagement() {
             style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
           >
             <Mail size={14} />
-            {updatingOrder === order._id ? 'Processing...' : 'Merchant Enquiry'}
+            {updatingOrder === order._id ? 'Processing...' : 'Manufacturer Enquiry'}
           </button>
           <button
             className="btn btn--primary"
@@ -715,7 +715,7 @@ export default function OrderManagement() {
         </div>
       )}
 
-      {/* Merchant Enquiry Modal */}
+      {/* Manufacturer Enquiry Modal */}
       {showEnquiryModal && (
         <div style={{
           position: 'fixed',
@@ -736,7 +736,7 @@ export default function OrderManagement() {
             animation: 'slideUp 0.3s ease-out'
           }}>
             <h2 style={{ margin: '0 0 20px 0', fontSize: '20px', fontWeight: '600' }}>
-              Send Merchant Enquiry
+              Send Manufacturer Enquiry
             </h2>
             
             <p style={{ margin: '0 0 20px 0', color: 'var(--text-secondary)', fontSize: '14px' }}>
