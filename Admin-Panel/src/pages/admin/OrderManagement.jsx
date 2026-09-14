@@ -78,7 +78,7 @@ export default function OrderManagement() {
   });
 
   const totalRevenue = timeFiltered.reduce((s,o)=>s+(o.total||0),0);
-  const pending = timeFiltered.filter(o=>o.status==='pending' || o.status==='pending_review').length;
+  const pending = timeFiltered.filter(o=>o.status==='requested' || o.status==='pending').length;
   const cancelled = timeFiltered.filter(o=>o.status==='cancelled').length;
 
   // Handle order status update
