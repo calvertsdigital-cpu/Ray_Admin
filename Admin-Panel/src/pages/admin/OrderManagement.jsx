@@ -43,8 +43,8 @@ export default function OrderManagement() {
 
   // Fetch all orders (legacy purchases API)
   const legacyFetcher = useCallback(async () => {
-    const { data } = await axiosInstance.get(getEndpoints(role).getOrders);
-    return data.purchases || data.orders || data || [];
+    const { data } = await axiosInstance.get(getEndpoints(role).getAllOrders);
+    return data.orders || data.purchases || data || [];
   }, [role]);
 
   // Fetch new orders with pending_review status
