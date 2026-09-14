@@ -65,7 +65,7 @@ export default function OrderManagement() {
     useAutoRefresh(newOrdersFetcher, INTERVAL, [role]);
 
   // Combine orders based on active tab
-  const allOrders = activeTab === 'All Orders' ? legacyOrders : newOrders.filter(o => o.status === 'requested');
+  const allOrders = activeTab === 'All Orders' ? legacyOrders : legacyOrders.filter(o => o.status === 'requested');
   const loading = activeTab === 'All Orders' ? legacyLoading : newOrdersLoading;
 
   const timeFiltered = filterByTime(allOrders, active);
