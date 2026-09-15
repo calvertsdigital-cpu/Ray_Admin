@@ -293,7 +293,69 @@ const RetailerOrderManagement = () => {
                 </div>
 
                 <div className="rom-form-group">
-                  <label>Admin Notes</label>
+                  <label>Admin Notes (Optional)</label>
+                  <div className="rom-notes-presets">
+                    <label className="rom-checkbox">
+                      <input
+                        type="checkbox"
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setConfirmationForm({
+                              ...confirmationForm,
+                              notes: 'Product currently unavailable.',
+                            });
+                          }
+                        }}
+                        checked={confirmationForm.notes === 'Product currently unavailable.'}
+                      />
+                      ☐ Product currently unavailable.
+                    </label>
+                    <label className="rom-checkbox">
+                      <input
+                        type="checkbox"
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setConfirmationForm({
+                              ...confirmationForm,
+                              notes: 'Product discontinued.',
+                            });
+                          }
+                        }}
+                        checked={confirmationForm.notes === 'Product discontinued.'}
+                      />
+                      ☐ Product discontinued.
+                    </label>
+                    <label className="rom-checkbox">
+                      <input
+                        type="checkbox"
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setConfirmationForm({
+                              ...confirmationForm,
+                              notes: 'Product temporarily out of stock.',
+                            });
+                          }
+                        }}
+                        checked={confirmationForm.notes === 'Product temporarily out of stock.'}
+                      />
+                      ☐ Product temporarily out of stock.
+                    </label>
+                    <label className="rom-checkbox">
+                      <input
+                        type="checkbox"
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setConfirmationForm({
+                              ...confirmationForm,
+                              notes: 'Expected back in stock shortly',
+                            });
+                          }
+                        }}
+                        checked={confirmationForm.notes === 'Expected back in stock shortly'}
+                      />
+                      ☐ Expected back in stock shortly
+                    </label>
+                  </div>
                   <textarea
                     value={confirmationForm.notes}
                     onChange={(e) =>
@@ -302,7 +364,7 @@ const RetailerOrderManagement = () => {
                         notes: e.target.value,
                       })
                     }
-                    placeholder="Add any notes for the retailer..."
+                    placeholder="Or add custom notes for the retailer..."
                     rows="3"
                   />
                 </div>

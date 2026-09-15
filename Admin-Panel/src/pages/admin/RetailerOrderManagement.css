@@ -527,3 +527,47 @@
     padding: 8px;
   }
 }
+
+
+/* Admin Notes Presets - Checkboxes */
+.rom-notes-presets {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 15px;
+  padding: 15px;
+  background: #f3f4f6;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.rom-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  color: #374151;
+}
+
+.rom-checkbox:hover {
+  background: #f9fafb;
+  border-color: #16a34a;
+}
+
+.rom-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #16a34a;
+}
+
+.rom-checkbox input[type="checkbox"]:checked + label {
+  font-weight: 600;
+  color: #16a34a;
+}
