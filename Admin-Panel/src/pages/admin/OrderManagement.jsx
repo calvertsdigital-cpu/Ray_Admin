@@ -220,8 +220,14 @@ export default function OrderManagement() {
       setAdminNotes('');
       refresh();
     } catch (error) {
-      console.error('❌ Error confirming order:', { orderId: confirmingOrderId, error: error.response?.data });
-      toast.error(error.response?.data?.message || 'Failed to confirm order');
+      console.error('❌ Error confirming order:', { 
+        orderId: confirmingOrderId,
+        status: error.response?.status,
+        error: error.response?.data,
+        fullError: error.message
+      });
+      const errorMsg = error.response?.data?.message || error.message || 'Failed to confirm order';
+      toast.error(errorMsg);
     } finally {
       setUpdatingOrder(null);
     }
