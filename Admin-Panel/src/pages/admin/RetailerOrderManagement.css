@@ -389,15 +389,18 @@
 }
 
 .rom-form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  width: 100%;
 }
 
 .rom-form-group label {
   display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
+  margin-bottom: 12px;
+  font-weight: 700;
   color: #1f2937;
   font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .rom-form-group input,
@@ -533,31 +536,34 @@
 .rom-notes-presets {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 15px;
+  gap: 10px;
+  margin-bottom: 18px;
   padding: 15px;
-  background: #f3f4f6;
+  background: #f0f9ff;
   border-radius: 6px;
-  border: 1px solid #e5e7eb;
+  border: 2px solid #0ea5e9;
+  width: 100%;
 }
 
 .rom-checkbox {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
-  padding: 8px 12px;
+  padding: 10px 12px;
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #cbd5e1;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 14px;
+  font-size: 13px;
   color: #374151;
+  font-weight: 500;
 }
 
 .rom-checkbox:hover {
-  background: #f9fafb;
+  background: #f8fafc;
   border-color: #16a34a;
+  box-shadow: 0 1px 3px rgba(22, 163, 74, 0.1);
 }
 
 .rom-checkbox input[type="checkbox"] {
@@ -565,9 +571,16 @@
   height: 18px;
   cursor: pointer;
   accent-color: #16a34a;
+  margin-top: 2px;
+  flex-shrink: 0;
 }
 
-.rom-checkbox input[type="checkbox"]:checked + label {
-  font-weight: 600;
+.rom-checkbox input[type="checkbox"]:checked {
+  accent-color: #16a34a;
+}
+
+.rom-checkbox input[type="checkbox"]:checked ~ * {
+  font-weight: 700;
   color: #16a34a;
 }
+

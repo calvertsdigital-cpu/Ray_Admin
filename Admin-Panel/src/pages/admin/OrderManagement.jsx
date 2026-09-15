@@ -634,16 +634,167 @@ export default function OrderManagement() {
 
                   {/* Admin Notes */}
                   <div style={{ marginBottom: '24px' }}>
-                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#333' }}>
+                    <label style={{ display: 'block', marginBottom: '12px', fontWeight: '700', fontSize: '14px', color: '#333', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                       📝 Admin Notes (Optional)
                     </label>
+                    
+                    {/* Checkboxes */}
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '10px',
+                      marginBottom: '15px',
+                      padding: '15px',
+                      background: '#f0f9ff',
+                      borderRadius: '6px',
+                      border: '2px solid #0ea5e9',
+                      width: '100%'
+                    }}>
+                      <label style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '10px',
+                        padding: '10px 12px',
+                        background: 'white',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        color: '#374151',
+                        fontWeight: '500',
+                        transition: 'all 0.2s'
+                      }}>
+                        <input
+                          type="checkbox"
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setAdminNotes('Product currently unavailable.');
+                            }
+                          }}
+                          checked={adminNotes === 'Product currently unavailable.'}
+                          style={{
+                            width: '18px',
+                            height: '18px',
+                            cursor: 'pointer',
+                            accentColor: '#16a34a',
+                            marginTop: '2px',
+                            flexShrink: 0
+                          }}
+                        />
+                        <span>☐ Product currently unavailable.</span>
+                      </label>
+                      
+                      <label style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '10px',
+                        padding: '10px 12px',
+                        background: 'white',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        color: '#374151',
+                        fontWeight: '500',
+                        transition: 'all 0.2s'
+                      }}>
+                        <input
+                          type="checkbox"
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setAdminNotes('Product discontinued.');
+                            }
+                          }}
+                          checked={adminNotes === 'Product discontinued.'}
+                          style={{
+                            width: '18px',
+                            height: '18px',
+                            cursor: 'pointer',
+                            accentColor: '#16a34a',
+                            marginTop: '2px',
+                            flexShrink: 0
+                          }}
+                        />
+                        <span>☐ Product discontinued.</span>
+                      </label>
+                      
+                      <label style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '10px',
+                        padding: '10px 12px',
+                        background: 'white',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        color: '#374151',
+                        fontWeight: '500',
+                        transition: 'all 0.2s'
+                      }}>
+                        <input
+                          type="checkbox"
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setAdminNotes('Product temporarily out of stock.');
+                            }
+                          }}
+                          checked={adminNotes === 'Product temporarily out of stock.'}
+                          style={{
+                            width: '18px',
+                            height: '18px',
+                            cursor: 'pointer',
+                            accentColor: '#16a34a',
+                            marginTop: '2px',
+                            flexShrink: 0
+                          }}
+                        />
+                        <span>☐ Product temporarily out of stock.</span>
+                      </label>
+                      
+                      <label style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '10px',
+                        padding: '10px 12px',
+                        background: 'white',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        color: '#374151',
+                        fontWeight: '500',
+                        transition: 'all 0.2s'
+                      }}>
+                        <input
+                          type="checkbox"
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setAdminNotes('Expected back in stock shortly');
+                            }
+                          }}
+                          checked={adminNotes === 'Expected back in stock shortly'}
+                          style={{
+                            width: '18px',
+                            height: '18px',
+                            cursor: 'pointer',
+                            accentColor: '#16a34a',
+                            marginTop: '2px',
+                            flexShrink: 0
+                          }}
+                        />
+                        <span>☐ Expected back in stock shortly</span>
+                      </label>
+                    </div>
+                    
+                    {/* Custom Textarea */}
                     <p style={{ margin: '0 0 8px 0', color: 'var(--text-secondary)', fontSize: '12px' }}>
-                      Reason for unavailable items (sent to customer)
+                      Or add custom notes for the customer:
                     </p>
                     <textarea
                       value={adminNotes}
                       onChange={(e) => setAdminNotes(e.target.value)}
-                      placeholder="e.g., Currently out of stock. Will reorder next week."
+                      placeholder="Custom notes for customer..."
                       style={{
                         width: '100%',
                         padding: '10px 12px',
