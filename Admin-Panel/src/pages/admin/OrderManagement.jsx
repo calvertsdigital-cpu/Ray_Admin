@@ -150,6 +150,8 @@ export default function OrderManagement() {
 
     setUpdatingOrder(enquiryOrderId);
 
+    console.log('🔍 Sending Manufacturer Enquiry with:', { orderId: enquiryOrderId, merchantEmail: merchantEmail.trim() });
+
     try {
       await axiosInstance.post(getEndpoints(role).sendManufacturerInquiry, {
         orderId: enquiryOrderId,
@@ -162,7 +164,7 @@ export default function OrderManagement() {
       setEnquiryOrderId(null);
       refresh();
     } catch (error) {
-      console.error('Error sending Manufacturer Enquiry:', error);
+      console.error('❌ Error sending Manufacturer Enquiry:', { orderId: enquiryOrderId, error: error.response?.data });
       toast.error(error.response?.data?.message || 'Failed to send Manufacturer Enquiry');
     } finally {
       setUpdatingOrder(null);
@@ -200,6 +202,8 @@ export default function OrderManagement() {
 
     setUpdatingOrder(confirmingOrderId);
 
+    console.log('🔍 Confirming order with:', { orderId: confirmingOrderId, itemsCount: confirmedItems.length, shippingCost });
+
     try {
       await axiosInstance.post(getEndpoints(role).confirmOrder, {
         orderId: confirmingOrderId,
@@ -216,7 +220,7 @@ export default function OrderManagement() {
       setAdminNotes('');
       refresh();
     } catch (error) {
-      console.error('Error confirming order:', error);
+      console.error('❌ Error confirming order:', { orderId: confirmingOrderId, error: error.response?.data });
       toast.error(error.response?.data?.message || 'Failed to confirm order');
     } finally {
       setUpdatingOrder(null);
