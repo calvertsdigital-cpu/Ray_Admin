@@ -681,7 +681,7 @@ export default function OrderManagement() {
                             flexShrink: 0
                           }}
                         />
-                        <span>☐ Product currently unavailable.</span>
+                        <span>Product currently unavailable.</span>
                       </label>
                       
                       <label style={{
@@ -715,7 +715,7 @@ export default function OrderManagement() {
                             flexShrink: 0
                           }}
                         />
-                        <span>☐ Product discontinued.</span>
+                        <span>Product discontinued.</span>
                       </label>
                       
                       <label style={{
@@ -749,7 +749,7 @@ export default function OrderManagement() {
                             flexShrink: 0
                           }}
                         />
-                        <span>☐ Product temporarily out of stock.</span>
+                        <span>Product temporarily out of stock.</span>
                       </label>
                       
                       <label style={{
@@ -783,7 +783,7 @@ export default function OrderManagement() {
                             flexShrink: 0
                           }}
                         />
-                        <span>☐ Expected back in stock shortly</span>
+                        <span>Expected back in stock shortly</span>
                       </label>
                     </div>
                     
