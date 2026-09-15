@@ -151,7 +151,7 @@ export default function OrderManagement() {
     setUpdatingOrder(enquiryOrderId);
 
     try {
-      await axiosInstance.post(getEndpoints(role).sendMerchantEnquiry, {
+      await axiosInstance.post(getEndpoints(role).sendManufacturerInquiry, {
         orderId: enquiryOrderId,
         merchantEmail: merchantEmail.trim()
       });
