@@ -1,0 +1,529 @@
+.retailer-order-management {
+  padding: 20px;
+  background: #f9fafb;
+  min-height: 100vh;
+}
+
+.rom-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.rom-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.rom-refresh-btn {
+  padding: 10px 20px;
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.rom-refresh-btn:hover:not(:disabled) {
+  background: #15803d;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.rom-refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.rom-loading,
+.rom-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 8px;
+  border: 2px dashed #e5e7eb;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #16a34a;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rom-loading p,
+.rom-empty p {
+  color: #6b7280;
+  font-size: 16px;
+}
+
+.rom-container {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 1200px) {
+  .rom-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Orders List */
+.rom-list {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.rom-list h3 {
+  padding: 20px;
+  margin: 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  background: #f9fafb;
+}
+
+.rom-orders {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.rom-orders::-webkit-scrollbar {
+  width: 6px;
+}
+
+.rom-orders::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.rom-orders::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.rom-orders::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.rom-order-card {
+  padding: 15px;
+  border-left: 4px solid transparent;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rom-order-card:hover {
+  background: #f9fafb;
+  border-left-color: #16a34a;
+}
+
+.rom-order-card.active {
+  background: #f0fdf4;
+  border-left-color: #16a34a;
+}
+
+.rom-order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.rom-order-id {
+  font-weight: 700;
+  color: #1f2937;
+  font-size: 14px;
+  font-family: monospace;
+}
+
+.rom-status {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.rom-status.pending {
+  background: #fef08a;
+  color: #854d0e;
+}
+
+.rom-status.confirmed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.rom-order-details {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.rom-order-details p {
+  margin: 5px 0;
+}
+
+.rom-date {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 8px !important;
+}
+
+/* Order Details Section */
+.rom-details {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.rom-details::-webkit-scrollbar {
+  width: 6px;
+}
+
+.rom-details::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.rom-details::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.rom-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 2px solid #e5e7eb;
+  background: #f9fafb;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.rom-details-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.rom-close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.rom-close-btn:hover {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+.rom-section {
+  padding: 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.rom-section h4 {
+  margin: 0 0 15px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Info Grid */
+.rom-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.rom-info-grid div {
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.rom-info-grid label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rom-info-grid p {
+  margin: 0;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+/* Address */
+.rom-address {
+  background: #f9fafb;
+  padding: 15px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.rom-address p {
+  margin: 5px 0;
+  color: #1f2937;
+}
+
+/* Items Table */
+.rom-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.rom-items-table thead {
+  background: #f3f4f6;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.rom-items-table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 700;
+  color: #1f2937;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 12px;
+}
+
+.rom-items-table td {
+  padding: 12px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #4b5563;
+}
+
+.rom-items-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.rom-price {
+  font-weight: 700;
+  color: #16a34a;
+}
+
+/* Pricing Breakdown */
+.rom-pricing-breakdown {
+  background: #f9fafb;
+  padding: 15px;
+  border-radius: 6px;
+  space-y: 10px;
+}
+
+.rom-pricing-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #e5e7eb;
+  color: #1f2937;
+}
+
+.rom-pricing-row:last-child {
+  border-bottom: none;
+}
+
+.rom-pricing-row strong {
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.rom-info-highlight {
+  background: #dbeafe;
+  padding: 10px;
+  margin: 0 -15px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* Confirmation Form */
+.rom-confirmation {
+  background: #f0fdf4;
+  border: 2px solid #16a34a;
+}
+
+.rom-form-group {
+  margin-bottom: 15px;
+}
+
+.rom-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.rom-form-group input,
+.rom-form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.rom-form-group input:focus,
+.rom-form-group textarea:focus {
+  outline: none;
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  background: white;
+}
+
+.rom-form-group textarea {
+  resize: vertical;
+}
+
+/* Final Total */
+.rom-final-total {
+  background: white;
+  padding: 15px;
+  border-radius: 6px;
+  margin: 15px 0;
+  border: 2px solid #e5e7eb;
+}
+
+.rom-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 14px;
+  color: #1f2937;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.rom-total-row:last-child {
+  border-bottom: none;
+}
+
+.rom-total-final {
+  border-top: 2px solid #e5e7eb;
+  padding-top: 12px;
+  margin-top: 12px;
+  font-weight: 700;
+  font-size: 16px;
+  color: #16a34a;
+}
+
+/* Action Buttons */
+.rom-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.rom-btn {
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rom-btn-confirm {
+  background: #16a34a;
+  color: white;
+}
+
+.rom-btn-confirm:hover {
+  background: #15803d;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.rom-btn-reject {
+  background: #ef4444;
+  color: white;
+}
+
+.rom-btn-reject:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.rom-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .rom-container {
+    grid-template-columns: 1fr;
+  }
+
+  .rom-list {
+    max-height: 300px;
+  }
+
+  .rom-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rom-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .rom-items-table {
+    font-size: 12px;
+  }
+
+  .rom-items-table th,
+  .rom-items-table td {
+    padding: 8px;
+  }
+}
