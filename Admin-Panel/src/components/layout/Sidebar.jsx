@@ -21,6 +21,7 @@ const ADMIN_NAV = [
   { label: 'Bulk Order Management',icon: Layers,          path: '/admin/bulk-management' },
   { label: 'User Management',      icon: Users,           path: '/admin/user-management' },
   { label: 'Order Management',     icon: ShoppingCart,    path: '/admin/order-management' },
+  { label: 'Retailer Orders',      icon: ShoppingBag,     path: '/admin/retailer-order-management' },
   { label: 'Coupon Management',    icon: Ticket,          path: '/admin/create-coupon' },
   { label: 'Payment Management',   icon: CreditCard,      path: '/admin/payment-management' },
   { label: 'Refund',               icon: RotateCcw,       path: '/admin/refund' },
