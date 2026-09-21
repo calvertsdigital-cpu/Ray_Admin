@@ -44,6 +44,7 @@ const Overview            = lazy(() => import('./pages/admin/Overview'));
 const UserManagement      = lazy(() => import('./pages/admin/UserManagement'));
 const AdminManagement     = lazy(() => import('./pages/admin/AdminManagement'));
 const OrderManagement     = lazy(() => import('./pages/admin/OrderManagement'));
+const RetailerOrderManagement = lazy(() => import('./pages/admin/RetailerOrderManagement'));
 const InventoryManagement = lazy(() => import('./pages/admin/InventoryManagement'));
 const CategoryManagement  = lazy(() => import('./pages/admin/CategoryManagement'));
 const BrandManagement     = lazy(() => import('./pages/admin/BrandManagement'));
@@ -103,6 +104,7 @@ export default function App() {
             {/* Shared pages (all 3 roles) */}
             <Route path="/admin"                      element={<Page component={Overview}/>} />
             <Route path="/admin/order-management"     element={<Page component={OrderManagement}/>} />
+            <Route path="/admin/retailer-order-management" element={<AdminPage component={RetailerOrderManagement}/>} />
             <Route path="/admin/inventory-management" element={<Page component={InventoryManagement}/>} />
             <Route path="/admin/reviews"              element={<Page component={ProductReviews}/>} />
             <Route path="/admin/blog-management"      element={<Page component={BlogManagement}/>} />
