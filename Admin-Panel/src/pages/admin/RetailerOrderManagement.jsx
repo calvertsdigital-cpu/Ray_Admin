@@ -9,6 +9,7 @@ const RetailerOrderManagement = () => {
   const [loading, setLoading] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [activeTab, setActiveTab] = useState('pending');
+  const [activeDetailTab, setActiveDetailTab] = useState('items'); // New state for detail tabs
   const [filterStatus, setFilterStatus] = useState('pending_confirmation');
   const [confirmationForm, setConfirmationForm] = useState({
     shippingCost: 0,
@@ -208,7 +209,29 @@ const RetailerOrderManagement = () => {
                 </button>
               </div>
 
-              {/* Retailer & Shipping Info */}
+              {/* Detail Tabs */}
+              <div className="rom-detail-tabs">
+                <button
+                  className={`rom-detail-tab ${activeDetailTab === 'items' ? 'active' : ''}`}
+                  onClick={() => setActiveDetailTab('items')}
+                >
+                  📦 Order Items
+                </button>
+                <button
+                  className={`rom-detail-tab ${activeDetailTab === 'shipping' ? 'active' : ''}`}
+                  onClick={() => setActiveDetailTab('shipping')}
+                >
+                  📍 Shipping Address
+                </button>
+                <button
+                  className={`rom-detail-tab ${activeDetailTab === 'confirm' ? 'active' : ''}`}
+                  onClick={() => setActiveDetailTab('confirm')}
+                >
+                  ✅ Confirm Order
+                </button>
+              </div>
+
+              {/* Retailer Info (Always Visible) */}
               <div className="rom-section">
                 <h4>📋 Retailer Information</h4>
                 <div className="rom-info-grid">
@@ -231,72 +254,115 @@ const RetailerOrderManagement = () => {
                 </div>
               </div>
 
-              {/* Shipping Address */}
-              <div className="rom-section">
-                <h4>📍 Shipping Address</h4>
-                <div className="rom-address">
-                  <p>{selectedOrder.shippingAddress.fullName}</p>
-                  <p>{selectedOrder.shippingAddress.phone}</p>
-                  <p>{selectedOrder.shippingAddress.street}</p>
-                  <p>
-                    {selectedOrder.shippingAddress.city},{' '}
-                    {selectedOrder.shippingAddress.state}{' '}
-                    {selectedOrder.shippingAddress.zipCode}
-                  </p>
-                  <p>{selectedOrder.shippingAddress.country || 'USA'}</p>
+              {/* Tab Content: Order Items */}
+              {activeDetailTab === 'items' && (
+                <>
+                  {/* Order Items */}
+                  <div className="rom-section">
+                    <h4>📦 Order Items ({selectedOrder.items.length})</h4>
+                    <table className="rom-items-table">
+                      <thead>
+                        <tr>
+                          <th>Product</th>
+                          <th>Variant</th>
+                          <th>Qty</th>
+                          <th>Price</th>
+                          <th>Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedOrder.items.map((item, idx) => (
+                          <tr key={idx}>
+                            <td>{item.product?.name || 'Product'}</td>
+                            <td>{item.variantLabel || '-'}</td>
+                            <td>{item.quantity}</td>
+                            <td>${item.priceAtOrder.toFixed(2)}</td>
+                            <td className="rom-price">
+                              ${(item.priceAtOrder * item.quantity).toFixed(2)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Pricing Breakdown */}
+                  <div className="rom-section">
+                    <h4>💰 Pricing Breakdown</h4>
+                    <div className="rom-pricing-breakdown">
+                      <div className="rom-pricing-row">
+                        <span>Subtotal:</span>
+                        <strong>${selectedOrder.subtotal.toFixed(2)}</strong>
+                      </div>
+                      <div className="rom-pricing-row">
+                        <span>Current Shipping Cost:</span>
+                        <span>${selectedOrder.shippingCost.toFixed(2)}</span>
+                      </div>
+                      <div className="rom-pricing-row">
+                        <span>Current Total:</span>
+                        <strong>${selectedOrder.total.toFixed(2)}</strong>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Tab Content: Shipping Address */}
+              {activeDetailTab === 'shipping' && (
+                <div className="rom-section">
+                  <h4>📍 Complete Shipping Address</h4>
+                  <div className="rom-address-details">
+                    <div className="rom-address-card">
+                      <div className="rom-address-row">
+                        <label>Full Name:</label>
+                        <p>{selectedOrder.shippingAddress.fullName}</p>
+                      </div>
+                      <div className="rom-address-row">
+                        <label>Phone Number:</label>
+                        <p>{selectedOrder.shippingAddress.phone}</p>
+                      </div>
+                      <div className="rom-address-row">
+                        <label>Street Address:</label>
+                        <p>{selectedOrder.shippingAddress.street}</p>
+                      </div>
+                      <div className="rom-address-row">
+                        <label>City:</label>
+                        <p>{selectedOrder.shippingAddress.city}</p>
+                      </div>
+                      <div className="rom-address-row">
+                        <label>State:</label>
+                        <p>{selectedOrder.shippingAddress.state}</p>
+                      </div>
+                      <div className="rom-address-row">
+                        <label>ZIP Code:</label>
+                        <p>{selectedOrder.shippingAddress.zipCode}</p>
+                      </div>
+                      <div className="rom-address-row">
+                        <label>Country:</label>
+                        <p>{selectedOrder.shippingAddress.country || 'USA'}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Google Maps Link */}
+                    <div className="rom-map-link">
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                          `${selectedOrder.shippingAddress.street}, ${selectedOrder.shippingAddress.city}, ${selectedOrder.shippingAddress.state} ${selectedOrder.shippingAddress.zipCode}`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rom-btn rom-btn-map"
+                      >
+                        🗺️ View on Google Maps
+                      </a>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
 
-              {/* Order Items */}
-              <div className="rom-section">
-                <h4>📦 Order Items ({selectedOrder.items.length})</h4>
-                <table className="rom-items-table">
-                  <thead>
-                    <tr>
-                      <th>Product</th>
-                      <th>Variant</th>
-                      <th>Qty</th>
-                      <th>Price</th>
-                      <th>Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {selectedOrder.items.map((item, idx) => (
-                      <tr key={idx}>
-                        <td>{item.product?.name || 'Product'}</td>
-                        <td>{item.variantLabel || '-'}</td>
-                        <td>{item.quantity}</td>
-                        <td>${item.priceAtOrder.toFixed(2)}</td>
-                        <td className="rom-price">
-                          ${(item.priceAtOrder * item.quantity).toFixed(2)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pricing Breakdown */}
-              <div className="rom-section">
-                <h4>💰 Pricing Breakdown</h4>
-                <div className="rom-pricing-breakdown">
-                  <div className="rom-pricing-row">
-                    <span>Subtotal:</span>
-                    <strong>${selectedOrder.subtotal.toFixed(2)}</strong>
-                  </div>
-                  <div className="rom-pricing-row">
-                    <span>Current Shipping Cost:</span>
-                    <span>${selectedOrder.shippingCost.toFixed(2)}</span>
-                  </div>
-                  <div className="rom-pricing-row">
-                    <span>Current Total:</span>
-                    <strong>${selectedOrder.total.toFixed(2)}</strong>
-                  </div>
-                </div>
-              </div>
-
-              {/* Confirmation Form */}
-              <div className="rom-section rom-confirmation">
+              {/* Tab Content: Confirm Order */}
+              {activeDetailTab === 'confirm' && (
+                <>
                 <h4>✅ Confirm Order & Add Costs</h4>
                 <div className="rom-form-group">
                   <label>Shipping Cost ($)</label>
@@ -443,6 +509,8 @@ const RetailerOrderManagement = () => {
                   </button>
                 </div>
               </div>
+              </>
+              )}
             </div>
           )}
         </div>
