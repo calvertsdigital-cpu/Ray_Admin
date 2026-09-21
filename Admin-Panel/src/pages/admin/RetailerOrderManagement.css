@@ -11,6 +11,41 @@
   margin-bottom: 30px;
 }
 
+.rom-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.rom-tabs {
+  display: flex;
+  gap: 8px;
+  background: white;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.rom-tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #6b7280;
+}
+
+.rom-tab:hover {
+  background: #f3f4f6;
+}
+
+.rom-tab.active {
+  background: #16a34a;
+  color: white;
+}
+
 .rom-header h2 {
   font-size: 28px;
   font-weight: 700;

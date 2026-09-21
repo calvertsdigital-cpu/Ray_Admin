@@ -18,20 +18,21 @@ const RetailerOrderManagement = () => {
 
   const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
 
-  // Fetch pending retailer orders
+  // Fetch retailer orders based on status
   useEffect(() => {
-    fetchPendingOrders();
-  }, []);
+    fetchOrders();
+  }, [activeTab]);
 
-  const fetchPendingOrders = async () => {
+  const fetchOrders = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `${BACKEND_URL}/api/orders/pending-retailer-orders`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const endpoint = activeTab === 'pending' 
+        ? `${BACKEND_URL}/api/retailer-orders/pending`
+        : `${BACKEND_URL}/api/retailer-orders/all?status=${activeTab}`;
+      
+      const response = await axios.get(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       setOrders(response.data.orders || []);
     } catch (error) {
@@ -46,23 +47,21 @@ const RetailerOrderManagement = () => {
     if (!selectedOrder) return;
 
     try {
-      const response = await axios.patch(
-        `${BACKEND_URL}/api/orders/confirm-retailer/${selectedOrder._id}`,
+      const response = await axios.post(
+        `${BACKEND_URL}/api/retailer-orders/${selectedOrder._id}/confirm`,
         {
-          shippingCost: parseFloat(confirmationForm.shippingCost),
-          taxAmount: parseFloat(confirmationForm.taxAmount),
-          notes: confirmationForm.notes,
-          items: selectedOrder.items, // Send back items (can be modified)
+          shippingCost: parseFloat(confirmationForm.shippingCost || 0),
+          adminNotes: confirmationForm.notes,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      alert('✅ Order confirmed successfully!');
+      alert('✅ Order confirmed successfully! Retailer will receive invoice.');
       setSelectedOrder(null);
       setConfirmationForm({ shippingCost: 0, taxAmount: 0, notes: '' });
-      fetchPendingOrders();
+      fetchOrders();
     } catch (error) {
       console.error('Error confirming order:', error);
       alert('Failed to confirm order: ' + error.response?.data?.message);
@@ -76,29 +75,28 @@ const RetailerOrderManagement = () => {
     if (!rejectionReason) return;
 
     try {
-      await axios.patch(
-        `${BACKEND_URL}/api/orders/reject-retailer/${selectedOrder._id}`,
+      await axios.post(
+        `${BACKEND_URL}/api/retailer-orders/${selectedOrder._id}/cancel-admin`,
         { reason: rejectionReason },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      alert('✅ Order rejected and user notified');
+      alert('✅ Order cancelled and user notified');
       setSelectedOrder(null);
-      fetchPendingOrders();
+      fetchOrders();
     } catch (error) {
-      console.error('Error rejecting order:', error);
-      alert('Failed to reject order');
+      console.error('Error cancelling order:', error);
+      alert('Failed to cancel order');
     }
   };
 
   const calculateFinalTotal = () => {
     if (!selectedOrder) return 0;
     return (
-      selectedOrder.pricing.subtotal +
-      parseFloat(confirmationForm.shippingCost) +
-      parseFloat(confirmationForm.taxAmount)
+      selectedOrder.subtotal +
+      parseFloat(confirmationForm.shippingCost || 0)
     ).toFixed(2);
   };
 
@@ -106,9 +104,37 @@ const RetailerOrderManagement = () => {
     <div className="retailer-order-management">
       <div className="rom-header">
         <h2>🛍️ Retailer Order Management</h2>
-        <button className="rom-refresh-btn" onClick={fetchPendingOrders} disabled={loading}>
-          🔄 Refresh
-        </button>
+        <div className="rom-header-actions">
+          <div className="rom-tabs">
+            <button 
+              className={`rom-tab ${activeTab === 'pending' ? 'active' : ''}`}
+              onClick={() => setActiveTab('pending')}
+            >
+              Pending
+            </button>
+            <button 
+              className={`rom-tab ${activeTab === 'confirmed' ? 'active' : ''}`}
+              onClick={() => setActiveTab('confirmed')}
+            >
+              Confirmed
+            </button>
+            <button 
+              className={`rom-tab ${activeTab === 'paid' ? 'active' : ''}`}
+              onClick={() => setActiveTab('paid')}
+            >
+              Paid
+            </button>
+            <button 
+              className={`rom-tab ${activeTab === 'all' ? 'active' : ''}`}
+              onClick={() => setActiveTab('all')}
+            >
+              All
+            </button>
+          </div>
+          <button className="rom-refresh-btn" onClick={fetchOrders} disabled={loading}>
+            🔄 Refresh
+          </button>
+        </div>
       </div>
 
       {loading && !orders.length ? (
@@ -136,18 +162,29 @@ const RetailerOrderManagement = () => {
                   }}
                 >
                   <div className="rom-order-header">
-                    <span className="rom-order-id">{order.orderId}</span>
-                    <span className="rom-status pending">⏳ Pending</span>
+                    <span className="rom-order-id">{order.orderNumber}</span>
+                    <span className={`rom-status ${order.status}`}>
+                      {order.status === 'pending' && '⏳ Pending'}
+                      {order.status === 'confirmed' && '✓ Confirmed'}
+                      {order.status === 'paid' && '💳 Paid'}
+                      {order.status === 'processing' && '📦 Processing'}
+                      {order.status === 'shipped' && '🚚 Shipped'}
+                      {order.status === 'delivered' && '✅ Delivered'}
+                      {order.status === 'cancelled' && '✕ Cancelled'}
+                    </span>
                   </div>
                   <div className="rom-order-details">
                     <p>
-                      <strong>Retailer:</strong> {order.user?.name || 'Unknown'}
+                      <strong>Retailer:</strong> {order.retailer?.name || 'Unknown'}
+                    </p>
+                    <p>
+                      <strong>Email:</strong> {order.retailer?.email || 'N/A'}
                     </p>
                     <p>
                       <strong>Items:</strong> {order.items.length}
                     </p>
                     <p>
-                      <strong>Total:</strong> ${order.pricing.subtotal.toFixed(2)}
+                      <strong>Total:</strong> ${order.total.toFixed(2)}
                     </p>
                     <p className="rom-date">
                       {new Date(order.createdAt).toLocaleDateString()}
@@ -162,7 +199,7 @@ const RetailerOrderManagement = () => {
           {selectedOrder && (
             <div className="rom-details">
               <div className="rom-details-header">
-                <h3>Order Details: {selectedOrder.orderId}</h3>
+                <h3>Order Details: {selectedOrder.orderNumber}</h3>
                 <button
                   className="rom-close-btn"
                   onClick={() => setSelectedOrder(null)}
@@ -177,15 +214,15 @@ const RetailerOrderManagement = () => {
                 <div className="rom-info-grid">
                   <div>
                     <label>Retailer Name</label>
-                    <p>{selectedOrder.user?.name}</p>
+                    <p>{selectedOrder.retailer?.name || 'N/A'}</p>
                   </div>
                   <div>
                     <label>Email</label>
-                    <p>{selectedOrder.email}</p>
+                    <p>{selectedOrder.retailer?.email || 'N/A'}</p>
                   </div>
                   <div>
                     <label>Phone</label>
-                    <p>{selectedOrder.phone}</p>
+                    <p>{selectedOrder.retailer?.phone || selectedOrder.shippingAddress.phone}</p>
                   </div>
                   <div>
                     <label>Order Date</label>
@@ -198,16 +235,15 @@ const RetailerOrderManagement = () => {
               <div className="rom-section">
                 <h4>📍 Shipping Address</h4>
                 <div className="rom-address">
-                  <p>
-                    {selectedOrder.shippingAddress.firstName}{' '}
-                    {selectedOrder.shippingAddress.lastName}
-                  </p>
+                  <p>{selectedOrder.shippingAddress.fullName}</p>
+                  <p>{selectedOrder.shippingAddress.phone}</p>
                   <p>{selectedOrder.shippingAddress.street}</p>
                   <p>
                     {selectedOrder.shippingAddress.city},{' '}
                     {selectedOrder.shippingAddress.state}{' '}
-                    {selectedOrder.shippingAddress.zip}
+                    {selectedOrder.shippingAddress.zipCode}
                   </p>
+                  <p>{selectedOrder.shippingAddress.country || 'USA'}</p>
                 </div>
               </div>
 
@@ -218,21 +254,21 @@ const RetailerOrderManagement = () => {
                   <thead>
                     <tr>
                       <th>Product</th>
+                      <th>Variant</th>
                       <th>Qty</th>
-                      <th>Wholesale Price</th>
-                      <th>Retail Price</th>
+                      <th>Price</th>
                       <th>Total</th>
                     </tr>
                   </thead>
                   <tbody>
                     {selectedOrder.items.map((item, idx) => (
                       <tr key={idx}>
-                        <td>{item.productName}</td>
+                        <td>{item.product?.name || 'Product'}</td>
+                        <td>{item.variantLabel || '-'}</td>
                         <td>{item.quantity}</td>
-                        <td>${item.wholesalePrice.toFixed(2)}</td>
-                        <td>${item.retailPrice.toFixed(2)}</td>
+                        <td>${item.priceAtOrder.toFixed(2)}</td>
                         <td className="rom-price">
-                          ${item.lineTotal.toFixed(2)}
+                          ${(item.priceAtOrder * item.quantity).toFixed(2)}
                         </td>
                       </tr>
                     ))}
@@ -245,12 +281,16 @@ const RetailerOrderManagement = () => {
                 <h4>💰 Pricing Breakdown</h4>
                 <div className="rom-pricing-breakdown">
                   <div className="rom-pricing-row">
-                    <span>Subtotal (with 20% markup):</span>
-                    <strong>${selectedOrder.pricing.subtotal.toFixed(2)}</strong>
+                    <span>Subtotal:</span>
+                    <strong>${selectedOrder.subtotal.toFixed(2)}</strong>
                   </div>
-                  <div className="rom-pricing-row rom-info-highlight">
-                    <span>Markup Amount (20%):</span>
-                    <span>${selectedOrder.pricing.markupAmount.toFixed(2)}</span>
+                  <div className="rom-pricing-row">
+                    <span>Current Shipping Cost:</span>
+                    <span>${selectedOrder.shippingCost.toFixed(2)}</span>
+                  </div>
+                  <div className="rom-pricing-row">
+                    <span>Current Total:</span>
+                    <strong>${selectedOrder.total.toFixed(2)}</strong>
                   </div>
                 </div>
               </div>
@@ -289,7 +329,9 @@ const RetailerOrderManagement = () => {
                       })
                     }
                     placeholder="0.00"
+                    disabled
                   />
+                  <p className="text-xs text-gray-500 mt-1">Tax is calculated automatically (if applicable)</p>
                 </div>
 
                 <div className="rom-form-group">
@@ -308,7 +350,7 @@ const RetailerOrderManagement = () => {
                         }}
                         checked={confirmationForm.notes === 'Product currently unavailable.'}
                       />
-                      ☐ Product currently unavailable.
+                      Product currently unavailable.
                     </label>
                     <label className="rom-checkbox">
                       <input
@@ -373,15 +415,11 @@ const RetailerOrderManagement = () => {
                 <div className="rom-final-total">
                   <div className="rom-total-row">
                     <span>Subtotal:</span>
-                    <span>${selectedOrder.pricing.subtotal.toFixed(2)}</span>
+                    <span>${selectedOrder.subtotal.toFixed(2)}</span>
                   </div>
                   <div className="rom-total-row">
                     <span>+ Shipping:</span>
-                    <span>${parseFloat(confirmationForm.shippingCost).toFixed(2)}</span>
-                  </div>
-                  <div className="rom-total-row">
-                    <span>+ Tax:</span>
-                    <span>${parseFloat(confirmationForm.taxAmount).toFixed(2)}</span>
+                    <span>${parseFloat(confirmationForm.shippingCost || 0).toFixed(2)}</span>
                   </div>
                   <div className="rom-total-row rom-total-final">
                     <span>FINAL TOTAL:</span>
