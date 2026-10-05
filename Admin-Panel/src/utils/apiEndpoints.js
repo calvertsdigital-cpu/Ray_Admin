@@ -96,8 +96,10 @@ export function getEndpoints(role) {
         getBrands: '/api/admin/get-brands',
 
         // Blogs
-        getBlogs: '/api/wholesaler/get-all-blogs',
-        deleteBlog: (id) => `/api/wholesaler/delete-blog/${id}`,
+        getBlogs: '/api/admin/get-blogs',
+        createBlog: '/api/admin/create-blog',
+        updateBlog: (id) => `/api/admin/update-blog/${id}`,
+        deleteBlog: (id) => `/api/admin/delete-blog/${id}`,
 
         // Reviews
         getProductsWithReviews: '/api/admin/products-with-reviews',

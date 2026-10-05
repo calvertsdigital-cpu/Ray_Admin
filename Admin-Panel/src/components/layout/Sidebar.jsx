@@ -14,6 +14,7 @@ import './Sidebar.css';
 /* ── Nav items per role ─────────────────────── */
 const ADMIN_NAV = [
   { label: 'Overview',             icon: LayoutDashboard, path: '/admin' },
+  { label: 'Blog Management',      icon: FileText,        path: '/admin/blog-management' },
   { label: 'Category Management',  icon: Tag,             path: '/admin/category-management' },
   { label: 'Brand Management',     icon: ShoppingBag,     path: '/admin/brand-management' },
   { label: 'Inventory Management', icon: Package,         path: '/admin/inventory-management' },

@@ -508,7 +508,6 @@ const RetailerOrderManagement = () => {
                     ✕ Reject Order
                   </button>
                 </div>
-              </div>
               </>
               )}
             </div>
