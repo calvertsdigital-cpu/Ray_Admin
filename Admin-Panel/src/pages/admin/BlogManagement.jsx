@@ -8,7 +8,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import toast from 'react-hot-toast';
 import {
   Plus, Edit2, Trash2, X, Upload, Eye, EyeOff,
-  Image as ImageIcon, Tag, Clock, Globe, Save,
+  Image as ImageIcon, Tag, Globe, Save,
   FileText, CheckCircle, AlertCircle, Search
 } from 'lucide-react';
 import axiosInstance from '../../utils/axiosInstance';
@@ -16,6 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 import { getEndpoints, imageUrl } from '../../utils/apiEndpoints';
 import { useAutoRefresh } from '../../hooks/useAutoRefresh';
 import AutoRefreshBar from '../../components/ui/AutoRefreshBar';
+import RichTextEditor from '../../components/ui/RichTextEditor';
 import PageWrapper from '../../components/ui/PageWrapper';
 import '../../components/ui/PageWrapper.css';
 import '../../components/ui/AutoRefreshBar.css';
@@ -226,27 +227,23 @@ function BlogModal({ blog, onClose, onSave, role }) {
                 </Field>
 
                 <Field label="Content *">
-                  <textarea
-                    className="form-input"
-                    rows={14}
+                  <RichTextEditor
                     value={form.content}
-                    onChange={e => set('content', e.target.value)}
-                    placeholder="Write the full article content here. You can use plain text or basic HTML (<p>, <h2>, <strong>, <ul>, <li>)."
-                    required
-                    style={{ fontFamily: 'monospace', fontSize: 13 }}
+                    onChange={(html) => set('content', html)}
+                    placeholder="Write your full article content here. Use the toolbar for headings, bold, lists, links and more."
+                    minHeight={380}
                   />
                   <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
-                    Supports plain text or simple HTML. Estimated read time auto-calculates if left blank.
+                    Use the toolbar to format headings, bold text, bullet lists, links and more. Content is saved as HTML.
                   </p>
                 </Field>
 
                 <Field label="The Bottom Line (optional closing callout)">
-                  <textarea
-                    className="form-input"
-                    rows={3}
+                  <RichTextEditor
                     value={form.bottomLine}
-                    onChange={e => set('bottomLine', e.target.value)}
+                    onChange={(html) => set('bottomLine', html)}
                     placeholder="A closing summary shown in a green callout box at the end of the article."
+                    minHeight={100}
                   />
                 </Field>
               </div>
